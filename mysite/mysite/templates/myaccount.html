@@ -135,7 +135,7 @@
           <h4 class="modal-title">Tweets</h4>
         </div>
         <div class="modal-body">
-        <input type="text" name="tweets" id="tweetsID" value=""/>
+        <p style="font-size:110%; color:red;"; id="show-text"></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" style="color: #ffffff; background-color: #00004c;" data-dismiss="modal">Close</button>
@@ -156,12 +156,16 @@
               data: $('form').serialize(),
               type: 'POST',
               success: function(response) {
-                  alert(response);
+                  //alert(response);
+                  document.getElementById("show-text").innerHTML = response;
+                  $('#myModal').modal('show');
                   console.log(response);
               },
               error: function(error) {
                   console.log(error);
-                  alert("No result found");
+                  document.getElementById("show-text").innerHTML = "No result found";
+                  $('#myModal').modal('show');
+                  //alert("No result found");
               }
             });
 
