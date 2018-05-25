@@ -60,5 +60,18 @@ def getReportNoWait(filePath):
     else:
         return scan(filePath, False)
 
-filePath = ''
-print(getReportNoWait(filePath))
+def getFileReport(filePath):
+    f = True
+    while f:
+        report = getReportNoWait(filePath)
+        if report in ['api limit', 'loading']:
+            time.sleep(20)
+            continue
+        f = False
+    if report['positives'] > report['total'] // 2:
+        return 'infected'
+    return 'clean'
+        
+
+filePath = 'C:\\Users\\aunghianu\\Downloads\\ijcis_10_234_246.pdf'
+print(getFileReport(filePath))
