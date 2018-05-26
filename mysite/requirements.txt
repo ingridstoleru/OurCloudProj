@@ -1,2 +1,4 @@
 social-auth-app-django
-twitter
+python-twitter
+azure-storage-file
+textblob
