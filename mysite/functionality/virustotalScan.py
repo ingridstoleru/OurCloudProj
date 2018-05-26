@@ -73,5 +73,5 @@ def getFileReport(filePath):
     return 'clean'
         
 
-filePath = 'C:\\Users\\aunghianu\\Downloads\\ijcis_10_234_246.pdf'
+filePath = ''
 print(getFileReport(filePath))
