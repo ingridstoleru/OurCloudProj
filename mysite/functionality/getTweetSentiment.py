@@ -8,11 +8,11 @@ def cleanTweet(tweet):
 def getTweetSentiment(tweet):
     analysis = TextBlob(cleanTweet(tweet))
     if analysis.sentiment.polarity > 0:
-        return 'positive'
+        return 'This denotes positive feelings!:)'
     elif analysis.sentiment.polarity == 0:
-        return 'neutral'
+        return 'This denotes neutral feelings!'
     else:
-        return 'negative'
+        return 'This denotes negative feelings!:('
 
 if __name__ == '__main__':
     tweets = getUserTweets()

@@ -80,7 +80,7 @@
                     <div class="panel panel-info" style="height:3000px; border-color:#00004c">
                         <div class="panel-heading" style="height:40px; width:100%; margin-left: 0px; margin-right: 0px; background-color:#00004c; color:#ffffff">My account</div>      
 
-                        <div id="tweets" style="height:8%; background-color: #bce8f1">
+                        <div id="tweets" style="height:20%; background-color: #bce8f1">
                               <p></p>         
                               <center><b>Tweets</b></center>
                               <p></p>
@@ -90,25 +90,51 @@
                             placeholder="Twitter account"/></center></fieldset>
                             <fieldset class="form-group"><center><input type="text" name="tweets_no" id="tweets_no" class="form-control" style="width:70%" placeholder="Tweets number"/></center></fieldset>
                             <fieldset class="form-group"><center><input type="button" value="Submit" class="btn btn-primary" id="submit_twiti" style="color: #ffffff; background-color: #00004c;"/></center></fieldset>
+                            <table id="item_table_2" class="table table-sm table-hover table-bordered">
+                                <tbody class="table_body_2" id = "tbody_2" style="display:block; height:280px; overflow-y:auto; overflow-x:auto" >{% include 'table_body.html' %}</tbody>
+                            </table>
                           </form>
                         </div> 
 
-                      <div id="sentiment" style="height:20%; background-color: #bce8f1"> 
+                      <div id="sentiment" style="height:8%; background-color: #bce8f1"> 
                           <p></p>        
                           <center><b>Sentiment Analysis</b></center>
                           <p></p>
+                       <form style="padding-top: 40px">
+                        {% csrf_token %}
+                        <fieldset class="form-group"><center><input type="text" name="tweet" id="tweet" class="form-control" style="width:70%;" 
+                        placeholder="Tweet"/></center></fieldset>
+                        <fieldset class="form-group"><center><input type="button" value="Submit" class="btn btn-primary" id="submit_twiti_2" style="color: #ffffff; background-color: #00004c;"/></center></fieldset>
+                      </form>
                       </div>
 
                       <div id="github" style="height:20%; background-color: #bce8f1">         
                           <p></p>
                           <center><b>Github</b></center>
                           <p></p>
+                          <form style="padding-top: 40px">
+                            {% csrf_token %}
+                            <fieldset class="form-group"><center><input type="text" name="user" id="user" class="form-control" style="width:70%;" 
+                            placeholder="Github account"/></center></fieldset>
+                            <fieldset class="form-group"><center><input type="text" name="project" id="project" class="form-control" style="width:70%" placeholder="Project name"/></center></fieldset>
+                            <fieldset class="form-group"><center><input type="text" name="files_limit" id="files_limit" class="form-control" style="width:70%" placeholder="Files limit"/></center></fieldset>
+                            <fieldset class="form-group"><center><input type="button" value="Submit" class="btn btn-primary" id="submit_git" style="color: #ffffff; background-color: #00004c;"/></center></fieldset>
+                            <table id="item_table" class="table table-sm table-hover table-bordered">
+                                <tbody class="table_body" id = "tbody" style="display:block; height:220px; overflow-y:auto; overflow-x:auto" >{% include 'table_body.html' %}</tbody>
+                            </table>
+                          </form>                     
                       </div>
 
-                      <div id="malware" style="height:20%; background-color: #bce8f1">         
+
+                       <div id="malware" style="height:8%; background-color: #bce8f1">         
                           <p></p>
                           <center><b>Malware Analysis</b></center>
-                          <p></p>
+                          <br>
+                          <form style="padding-top: 40px">
+                          {% csrf_token %}
+                          <fieldset class="form-group"><center><input type="text" name="file_name" id="file_name" class="form-control" style="width:70%" placeholder="File name"/></center></fieldset>                            
+                          <fieldset class="form-group"><center><input type="button" value="Analyze this sample" class="btn btn-primary" id="analyze" style="color: #ffffff; background-color: #00004c;"/></center></fieldset>    
+                          </form>                     
                       </div>
 
                     <p></p>
@@ -135,7 +161,7 @@
           <h4 class="modal-title">Tweets</h4>
         </div>
         <div class="modal-body">
-        <p style="font-size:110%; color:red;"; id="show-text"></p>
+        <p style="font-size:110%; color:#00004c;"; id="show-text"></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" style="color: #ffffff; background-color: #00004c;" data-dismiss="modal">Close</button>
@@ -144,6 +170,69 @@
       
     </div>
   </div>
+
+  <!-- Modal -->
+    <div class="modal fade" id="myModal2" role="dialog">
+      <div class="modal-dialog">
+      
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Sentiment Analysis</h4>
+          </div>
+          <div class="modal-body_2">
+          <p style="font-size:110%; color:#00004c;"; id="show-text_2"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" style="color: #ffffff; background-color: #00004c;" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  <!-- Modal -->
+    <div class="modal fade" id="myModal3" role="dialog">
+      <div class="modal-dialog">
+      
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Files retrieved from Github</h4>
+          </div>
+          <div class="modal-body_3">
+          <p style="font-size:110%; color:#00004c;"; id="show-text_3"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" style="color: #ffffff; background-color: #00004c;" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  <!-- Modal -->
+      <div class="modal fade" id="myModal4" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Malware Analysis</h4>
+            </div>
+            <div class="modal-body_4">
+            <p style="font-size:110%; color:#00004c;"; id="show-text_4"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" style="color: #ffffff; background-color: #00004c;" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
 
 <script>
 
@@ -157,19 +246,97 @@
               type: 'POST',
               success: function(response) {
                   //alert(response);
-                  document.getElementById("show-text").innerHTML = response;
-                  $('#myModal').modal('show');
+                  //document.getElementById("show-text").innerHTML = response;
+                  //$('#myModal').modal('show');
+                  document.getElementById("tbody_2").innerHTML = response;
                   console.log(response);
               },
               error: function(error) {
                   console.log(error);
-                  document.getElementById("show-text").innerHTML = "No result found";
+                  document.getElementById("show-text").innerHTML = "No tweets found!";
                   $('#myModal').modal('show');
                   //alert("No result found");
               }
             });
 
         });
+
+        $('#submit_twiti_2').click(function()
+        {
+              $.ajax({
+              url: "{% url 'polls:sentiment' %}",
+              data: $('form').serialize(),
+              type: 'POST',
+              success: function(response) {
+                  //alert(response);
+                  document.getElementById("show-text_2").innerHTML = response;
+                  $('#myModal2').modal('show');
+                  console.log(response);
+              },
+              error: function(error) {
+                  console.log(error);
+                  document.getElementById("show-text_2").innerHTML = "Error while analyzing sentiment!";
+                  $('#myModal2').modal('show');
+                  //alert("No result found");
+              }
+            });
+
+        });
+
+
+        $('#submit_git').click(function()
+        {
+              $.ajax({
+              url: "{% url 'polls:github' %}",
+              data: $('form').serialize(),
+              type: 'POST',
+              success: function(response) {
+                  //alert(response);
+                   //$('.table_body').html('').load("{% url 'polls:github' %}");
+                   document.getElementById("tbody").innerHTML = response;
+                  //document.getElementById("show-text_3").innerHTML = response;
+                  //$('#myModal3').modal('show');
+                  console.log(response);
+              },
+              error: function(error) {
+                  console.log(error);
+                  document.getElementById("show-text_3").innerHTML = "Error while retrieving files!";
+                  $('#myModal3').modal('show');
+                  //alert("No result found");
+              }
+            });
+
+        });
+
+         var lastClick;
+
+         $('#analyze').click(function()
+         {            
+              alert(lastClick);
+              $.ajax({
+              url: "{% url 'polls:vt' %}",
+              data: $('form').serialize(),
+              type: 'POST',
+              success: function(response) {
+                  //alert(response);
+                   //$('.table_body').html('').load("{% url 'polls:github' %}");
+                  document.getElementById("show-text_4").innerHTML = response;
+                  $('#myModal4').modal('show');
+                  console.log(response);
+              },
+              error: function(error) {
+                  console.log(error);
+                  document.getElementById("show-text_4").innerHTML = "Error while retrieving files!";
+                  $('#myModal4').modal('show');
+                  //alert("No result found");
+              }
+            });
+         });
+
+        function rowClick(obj) {
+          lastClick = obj.innerHTML;
+          document.getElementById("file_name").value = lastClick;
+        }
 
 </script>
 

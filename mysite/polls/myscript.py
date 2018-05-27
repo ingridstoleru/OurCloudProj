@@ -8,9 +8,11 @@ from django.template.context import RequestContext
 import json
 from django.conf import settings
 from tweepy.parsers import Parser
+from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http import HttpResponse
 import twitter
+
 
 #try with akras14 and 1
 
@@ -24,10 +26,8 @@ def getUserTweets(name, number):
     t = api.GetUserTimeline(screen_name=name, count=number)
     tweets = [i.AsDict() for i in t]
     text = [i['text'] for i in tweets]
-    s = ""
-    for i in text:
-        s += i + "\n"
-    return s
+  
+    return text
 
 
 class DoMyStuff(View):
@@ -42,7 +42,6 @@ class DoMyStuff(View):
 
         answer = getUserTweets(account, tweet_no)
 
-        return HttpResponse(answer)
-        
+        return render(request, 'table_body.html', {'response':answer})
         
    

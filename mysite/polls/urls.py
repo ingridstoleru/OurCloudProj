@@ -6,6 +6,9 @@ from .help import HelpView
 from .login import LoginView
 from .myaccount import MyAccountView
 from .myscript import DoMyStuff
+from .sentiment_analysis_script import DoSentimentAnalysis
+from .github_retrieve import DoGithubRetrieve
+from .vt import VIView
 from .views import views as core_views
 
 from django.contrib.auth import views as auth_views 
@@ -21,5 +24,8 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^mystuff/$', DoMyStuff.as_view(), name='mystuff'),
+    url(r'^sentiment/$', DoSentimentAnalysis.as_view(), name='sentiment'),
+    url(r'^github/$', DoGithubRetrieve.as_view(), name='github'),
     url(r'^myaccount', MyAccountView.as_view(template_name='myaccount.html'), name='myaccount'), 
+    url(r'^vt', VIView.as_view(), name='vt'), 
 ]
