@@ -38,7 +38,7 @@ def saveFile(fileName, fileText, dirName):
 
 
 """ github """
-OAUTH_TOKEN = 'd1e27cd7a834c851cb4bea56db3e4323c74d422c'
+OAUTH_TOKEN = '5869c89ff81422344fefe635350b318cd82f478d'
 
 def getUserProjects(user):
     resp = requests.get('https://api.github.com/users/{}/repos'.format(user), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})

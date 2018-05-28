@@ -5,7 +5,7 @@ from getGithubFiles import getProjectLastCommit, getFileContent
 from storageFunctionality import saveFile, createDir, getFile
 
 
-OAUTH_TOKEN = 'd1e27cd7a834c851cb4bea56db3e4323c74d422c'
+OAUTH_TOKEN = '5869c89ff81422344fefe635350b318cd82f478d'
 apiKey = '811a31748544dd8d3a2d8a13785c2e78ffb2c351b5d56b37168ab6ff6315dc1f'
 
 def saveProjectFilesToAzure(user, project, limit):
