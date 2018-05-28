@@ -2,6 +2,7 @@ from django.views import View
 from django.http import HttpResponse
 from textblob import TextBlob
 from django.shortcuts import render
+import threading
 import requests
 import base64
 import hashlib
@@ -13,7 +14,7 @@ from azure.storage.file import FileService, ContentSettings
 
 fileService = FileService(account_name='cs7b04dc31e3552x4267x9c3', account_key='ihwu6KLKRkUv3/dF3ELyhqbsB34jUJGyyVexD3gr2PUhcL3X5XFg/aFumVEHZCUHqqfP+m2UBM1Lni3uw26WcA==')
 filesDir = 'fileshare'
-fileService.create_share(filesDir)
+#fileService.create_share(filesDir)
 
 def getFiles(dirName):
     files = []
@@ -38,7 +39,7 @@ def saveFile(fileName, fileText, dirName):
 
 
 """ github """
-OAUTH_TOKEN = '5869c89ff81422344fefe635350b318cd82f478d'
+OAUTH_TOKEN = 'b7570a0f6b521d31d04368e7c35b0d5a105c12dd'
 
 def getUserProjects(user):
     resp = requests.get('https://api.github.com/users/{}/repos'.format(user), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})
@@ -118,39 +119,96 @@ def getProjectFilesRecursively(user, project, sha, files, limit):
 
 
 
-OAUTH_TOKEN = '496503a98c09100c3e945fe4c458604448bfddf5'
 apiKey = '811a31748544dd8d3a2d8a13785c2e78ffb2c351b5d56b37168ab6ff6315dc1f'
 
 def saveProjectFilesToAzure(user, project, limit):
     def saveProjectFilesRecursively(user, project, sha, path, files, dirName, limit):
-        print('https://api.github.com/repos/{}/{}/git/trees/{}'.format(user, project, sha))
-        resp = requests.get('https://api.github.com/repos/{}/{}/git/trees/{}'.format(user, project, sha), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})
+        #print('https://api.github.com/repos/{}/{}/git/trees/{}'.format(user, project, sha))
+        resp = requests.get('https://api.github.com/repos/{}/{}/git/trees/{}'.format(user, project, sha), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})  
         print(resp.status_code)
         if resp.status_code == 200:
             resp = resp.json()
-            tree = resp['tree']
-            for content in tree:
+            trees = []
+            blobs = []
+            for t in resp['tree']:
+                if t['type'] == 'blob':
+                    blobs.append(t)
+                else:
+                    trees.append(t)
+            for content in blobs:
                 if len(files) == limit:
-                        return
+                    return 1
+                if content['path'] in [".gitignore", "LICENSE", "README.md"]:
+                    continue
                 if path != '':
                     newPath = '{}\\{}'.format(path, content['path'])
                 else:
                     newPath = content['path']
-                if content['type'] == 'blob':
-                    if content['path'] in [".gitignore", "LICENSE", "README.md"]:
-                        continue                   
-                    print("here" + newPath)
-                    files.append(newPath)
-                    saveFile(newPath.replace('\\', '-'), getFileContent(content['url']), dirName)
-                elif content['type'] == 'tree':
-                    dir_sha = content['sha']
-                    saveProjectFilesRecursively(user, project, dir_sha, newPath, files, dirName, limit)
+                dir_sha = content['sha']
+                print("here" + newPath)
+                files.append(newPath)
+                t = threading.Thread(target=saveFile, args=[newPath.replace('\\', '-'), getFileContent(content['url']), dirName])
+                t.setDaemon(False)
+                t.start()
+            for content in trees:
+                if len(files) == limit:
+                        return 1
+                if path != '':
+                    newPath = '{}\\{}'.format(path, content['path'])
+                else:
+                    newPath = content['path']
+                dir_sha = content['sha']
+                if saveProjectFilesRecursively(user, project, dir_sha, newPath, files, dirName, limit) == 1:
+                    return 1
+            return 0
     sha = getProjectLastCommit(user, project)
     print('sha: ', sha)
     files = []
     dirName = '{}-{}'.format(user, project)
-    createDir(dirName)
+    t = threading.Thread(target=createDir, args=[ dirName])
+    t.setDaemon(False)
+    t.start()
     saveProjectFilesRecursively(user, project, sha, '', files, dirName, limit)
+    return files
+
+def saveProjectFilesToAzure2(user, project, limit):
+    def saveProjectFilesRecursively2(user, project, path, files, dirName, limit):
+        url = 'https://api.github.com/repos/{}/{}/contents/{}'.format(user, project, path)
+        resp = requests.get(url, headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})  
+        #print(resp.status_code)
+        if resp.status_code == 200:
+            resp = resp.json()
+            dirs = []
+            blobs = []
+            for t in resp:
+                if t['type'] == 'file':
+                    blobs.append(t)
+                elif t['type'] == 'dir':
+                    dirs.append(t)
+                else:
+                    continue
+            for content in blobs:
+                if len(files) == limit:
+                    return 1
+                if content['name'] in [".gitignore", "LICENSE", "README.md"]:
+                    continue
+                files.append(content['path'])
+                t = threading.Thread(target=saveFile, args=[content['path'].replace('/', '-'), getFileContent(content['_links']['git']), dirName])
+                t.setDaemon(False)
+                t.start()
+            for content in dirs:
+                if len(files) == limit:
+                        return 1
+                if saveProjectFilesRecursively2(user, project, content['path'], files, dirName, limit) == 1:
+                    return 1
+            return 0
+    #print('sha: ', sha)
+    files = []
+    dirName = '{}-{}'.format(user, project)
+    t = threading.Thread(target=createDir, args=[ dirName])
+    t.setDaemon(False)
+    t.start()
+    saveProjectFilesRecursively2(user, project, '', files, dirName, limit)
     return files
 
 
@@ -162,7 +220,7 @@ class DoGithubRetrieve(View):
         user = request.POST.get("user", "nada")
         project = request.POST.get("project", "nada")
         files_limit = request.POST.get("files_limit", "nada")
-        answer = saveProjectFilesToAzure(user, project, int(files_limit))
+        answer = saveProjectFilesToAzure2(user, project, int(files_limit))
       
         print(answer)
         return render(request, 'table_body.html', {'response':answer})

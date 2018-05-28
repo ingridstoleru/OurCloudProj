@@ -68,7 +68,7 @@ def getAzureFileReport(githubUser, githubProject, fileName):
         else:
             return scan(fileName, fileText, False)
     dirName = '{}-{}'.format(githubUser, githubProject)
-    file_ = getFile(dirName, fileName.replace('\\', '-'))
+    file_ = getFile(dirName, fileName.replace('\\', '-').replace('/', '-'))
     if file_ == None:
         return 'file not in azure'
     fileText = file_.content.encode('utf-8')
