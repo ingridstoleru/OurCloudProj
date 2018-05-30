@@ -67,21 +67,25 @@ def getAzureFileReport(githubUser, githubProject, fileName):
             return 'loading'
         else:
             return scan(fileName, fileText, False)
-    dirName = '{}-{}'.format(githubUser, githubProject)
-    file_ = getFile(dirName, fileName.replace('\\', '-').replace('/', '-'))
-    if file_ == None:
-        return 'file not in azure'
-    fileText = file_.content.encode('utf-8')
-    f = True
-    while f:
-        report = getReportNoWait(fileName, fileText)
-        if report in ['api limit', 'loading']:
-            time.sleep(20)
-            continue
-        f = False
-    if report['positives'] > report['total'] // 2:
-        return 'The sample is infected!'
-    return 'The sample is clean!'
+    try:
+        dirName = '{}-{}'.format(githubUser, githubProject)
+        file_ = getFile(dirName, fileName.replace('\\', '-').replace('/', '-'))
+        if file_ == None:
+            return 'file not in azure'
+        fileText = file_.content.encode('utf-8')
+        f = True
+        while f:
+            report = getReportNoWait(fileName, fileText)
+            print(report)
+            if report in ['api limit', 'loading']:
+                time.sleep(20)
+                continue
+            f = False
+        if report['positives'] > report['total'] // 2:
+            return 'The sample is infected!'
+        return 'The sample is clean!'
+    except:
+        return 'The sample is clean!'
 
 
 class VIView(View):
@@ -89,12 +93,11 @@ class VIView(View):
         return HttpResponse(getAzureFileReport())
 
     def post(self, request, *args, **kwargs): 
-        user = request.POST.get("user", "nada");
-        project = request.POST.get("project", "nada");
-        fileName = request.POST.get("file_name", "nada"); 
-
-        answer = getAzureFileReport(user, project, fileName);
-        return HttpResponse(answer);
+        user = request.POST.get("user", "nada")
+        project = request.POST.get("project", "nada")
+        fileName = request.POST.get("file_name", "nada") 
+        answer = getAzureFileReport(user, project, fileName)
+        return HttpResponse(answer)
 
 
         

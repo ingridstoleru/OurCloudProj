@@ -7,6 +7,7 @@ import requests
 import base64
 import hashlib
 import re
+from polls.vt import getAzureFileReport 
 
 
 """ storage """
@@ -39,7 +40,7 @@ def saveFile(fileName, fileText, dirName):
 
 
 """ github """
-OAUTH_TOKEN = 'b7570a0f6b521d31d04368e7c35b0d5a105c12dd'
+OAUTH_TOKEN = '7329e0a24ae6aad083ba3894c2046f7d9366529f'
 
 def getUserProjects(user):
     resp = requests.get('https://api.github.com/users/{}/repos'.format(user), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})
@@ -175,7 +176,7 @@ def saveProjectFilesToAzure2(user, project, limit):
     def saveProjectFilesRecursively2(user, project, path, files, dirName, limit):
         url = 'https://api.github.com/repos/{}/{}/contents/{}'.format(user, project, path)
         resp = requests.get(url, headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})  
-        #print(resp.status_code)
+        print(resp.status_code, resp.text)
         if resp.status_code == 200:
             resp = resp.json()
             dirs = []
@@ -193,6 +194,9 @@ def saveProjectFilesToAzure2(user, project, limit):
                 if content['name'] in [".gitignore", "LICENSE", "README.md"]:
                     continue
                 files.append(content['path'])
+                t = threading.Thread(target=getAzureFileReport, args=[user, project, content['path']])
+                t.setDaemon(False)
+                t.start()
                 t = threading.Thread(target=saveFile, args=[content['path'].replace('/', '-'), getFileContent(content['_links']['git']), dirName])
                 t.setDaemon(False)
                 t.start()
