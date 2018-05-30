@@ -10,10 +10,14 @@ from storageFunctionality import saveFile, createDir, getFile
 import threading
 
 
-OAUTH_TOKEN = '8e4d34d7ca24dcbf4df518b2419fb3ed72cd2dd2'
+#OAUTH_TOKEN = '2ace99f502776f620ddc23fae9cc3b2b42dd3631'
 apiKey = '811a31748544dd8d3a2d8a13785c2e78ffb2c351b5d56b37168ab6ff6315dc1f'
+
+""" Parametrii care trebuie dati din interfata """
 account_name = "akras14"
 githubUser = 'ingridstoleru'
+
+""" Limita pentru ca nu se termina niciodata daca nu dam o limita """
 limit = 10
 
 def getUserTweets(account_name):
@@ -138,72 +142,10 @@ def saveProjectFilesToAzure(user, project, limit):
     saveProjectFilesRecursively(user, project, sha, '', files, dirName, limit)
     return files
 
-def saveProjectFilesToAzure2(user, project, limit):
-    def saveProjectFilesRecursively2(user, project, path, files, dirName, limit):
-        url = 'https://api.github.com/repos/{}/{}/contents/{}'.format(user, project, path)
-        resp = requests.get(url, headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})  
-        #print(resp.status_code)
-        if resp.status_code == 200:
-            resp = resp.json()
-            dirs = []
-            blobs = []
-            for t in resp:
-                if t['type'] == 'file':
-                    blobs.append(t)
-                elif t['type'] == 'dir':
-                    dirs.append(t)
-                else:
-                    continue
-            for content in blobs:
-                if len(files) == limit:
-                    return 1
-                if content['name'] in [".gitignore", "LICENSE", "README.md"]:
-                    continue
-                files.append(content['path'])
-                t = threading.Thread(target=saveFile, args=[content['path'].replace('/', '-'), getFileContent(content['_links']['git']), dirName])
-                t.setDaemon(False)
-                t.start()
-            for content in dirs:
-                if len(files) == limit:
-                        return 1
-                if saveProjectFilesRecursively2(user, project, content['path'], files, dirName, limit) == 1:
-                    return 1
-            return 0
-    #print('sha: ', sha)
-    files = []
-    dirName = '{}-{}'.format(user, project)
-    t = threading.Thread(target=createDir, args=[ dirName])
-    t.setDaemon(False)
-    t.start()
-    saveProjectFilesRecursively2(user, project, '', files, dirName, limit)
-    return files
 
 def getFile(dirName, fileName):
     file_ = fileService.get_file_to_text(filesDir, dirName, fileName)
     return file_
-
-def getProjectFiles(user, project, limit):
-    sha = getProjectLastCommit(user, project)
-    files = []
-    getProjectFilesRecursively(user, project, sha, files, limit)
-    for i in range(len(files)):
-        content = getFileContent(files[i]['url'])
-        files[i]['content'] = content
-    return files
-
-def getProjectFilesRecursively(user, project, sha, files, limit):
-    resp = requests.get('https://api.github.com/repos/{}/{}/git/trees/{}'.format(user, project, sha), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})
-    if resp.status_code == 200:
-        resp = resp.json()
-        tree = resp['tree']
-        for content in tree:
-            if len(files) == limit:
-                    return
-            if content['type'] == 'blob':
-                files.append({'path': content['path'], 'url': content['url'], 'size': content['size'], 'sha': content['sha']})
-            elif content['type'] == 'tree':
-                dir_sha = content['sha']
-                getProjectFilesRecursively(user, project, dir_sha, files, limit)
 
 
 def getAzureFileReport(githubUser, githubProject, fileName):
@@ -262,22 +204,24 @@ def getAzureFileReport(githubUser, githubProject, fileName):
 if __name__ == "__main__":
     all_urls = []
     all_files = []
-    """ Get all urls from the all the tweets of a user """
+    f = open('workfile','w') 
+
+    """ Get all urls from the all the tweets of a user and scan them """
     for el in getUserTweets(account_name):
         for url in getUrlsFromTweet(str(el)):
             all_urls.append(url)       
-    #print(all_urls)
-    #for el in all_urls:
-        #print(getUrlStatus(el))
+    for el in all_urls:
+        #print("URL:{0} | Result:{1}".format(el, getUrlStatus(el)))
+        f.write("URL:{0} | Result:{1} \n".format(el, getUrlStatus(el)))
+    """ Get all files from all projects and scan them """
     all_projects = getUserProjects(githubUser)
-    t = time.time()
     for githubProject in all_projects:
-        for file_s in getProjectFiles(githubUser, githubProject, 1):
-            all_files.append(file_s)
-        files = saveProjectFilesToAzure(githubUser, githubProject, 3)
-        files = saveProjectFilesToAzure2(githubUser, githubProject, 3)
-    for file_s in all_files:
-        print(getAzureFileReport(githubUser, githubProject, file_s))
+        all_files = saveProjectFilesToAzure(githubUser, githubProject, 3)   
+        for file_s in all_files:
+            #print("File:{0} | Result:{1}".format(file_s, getAzureFileReport(githubUser, githubProject, file_s)))
+            f.write("File:{0} | Result:{1} \n".format(file_s, getAzureFileReport(githubUser, githubProject, file_s)))
+    f.close()
+
         
 
 
