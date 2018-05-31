@@ -12,6 +12,7 @@ import threading
 
 #OAUTH_TOKEN = '2ace99f502776f620ddc23fae9cc3b2b42dd3631'
 apiKey = '811a31748544dd8d3a2d8a13785c2e78ffb2c351b5d56b37168ab6ff6315dc1f'
+OAUTH_TOKEN = '47ca9f7f3de3f39b1055c8a37fb3bf7b95d3ebe8'
 
 """ Parametrii care trebuie dati din interfata """
 account_name = "akras14"

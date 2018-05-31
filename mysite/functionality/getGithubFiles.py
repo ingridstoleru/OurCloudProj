@@ -2,6 +2,7 @@ import requests
 import base64
 
 #OAUTH_TOKEN = '2ace99f502776f620ddc23fae9cc3b2b42dd3631'
+OAUTH_TOKEN = '47ca9f7f3de3f39b1055c8a37fb3bf7b95d3ebe8'
 
 def getUserProjects(user):
     resp = requests.get('https://api.github.com/users/{}/repos'.format(user), headers={'Authorization': 'token {}'.format(OAUTH_TOKEN)})

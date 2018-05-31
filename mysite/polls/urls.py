@@ -5,6 +5,7 @@ from .home import HomeView
 from .help import HelpView
 from .login import LoginView
 from .myaccount import MyAccountView
+from .urlsp import MyURLsView
 from .myscript import DoMyStuff
 from .sentiment_analysis_script import DoSentimentAnalysis
 from .github_retrieve import DoGithubRetrieve
@@ -27,5 +28,6 @@ urlpatterns = [
     url(r'^sentiment/$', DoSentimentAnalysis.as_view(), name='sentiment'),
     url(r'^github/$', DoGithubRetrieve.as_view(), name='github'),
     url(r'^myaccount', MyAccountView.as_view(template_name='myaccount.html'), name='myaccount'), 
+    url(r'^urlsparse/$', MyURLsView.as_view(), name='urlsparse'), 
     url(r'^vt', VIView.as_view(), name='vt'), 
 ]
