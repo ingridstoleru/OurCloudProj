@@ -11,9 +11,11 @@ from .sentiment_analysis_script import DoSentimentAnalysis
 from .github_retrieve import DoGithubRetrieve
 from .vt import VIView
 from .views import views as core_views
+from .automat import Automat
+from .getresults import Results
 
 from django.contrib.auth import views as auth_views 
-
+app_name = 'polls'
 urlpatterns = [
     # ex: /polls/
     url(r'^', include( ('django.contrib.auth.urls', "auth"), namespace="auth")),
@@ -29,5 +31,7 @@ urlpatterns = [
     url(r'^github/$', DoGithubRetrieve.as_view(), name='github'),
     url(r'^myaccount', MyAccountView.as_view(template_name='myaccount.html'), name='myaccount'), 
     url(r'^urlsparse/$', MyURLsView.as_view(), name='urlsparse'), 
-    url(r'^vt', VIView.as_view(), name='vt'), 
+    url(r'^vt', VIView.as_view(), name='vt'),
+    url(r'^automat', Automat.as_view(template_name='automat.html'),name='automat'),
+    url(r'^get_results', Results.as_view(), name='get_results') 
 ]
