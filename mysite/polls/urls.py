@@ -32,6 +32,6 @@ urlpatterns = [
     url(r'^myaccount', MyAccountView.as_view(template_name='myaccount.html'), name='myaccount'), 
     url(r'^urlsparse/$', MyURLsView.as_view(), name='urlsparse'), 
     url(r'^vt', VIView.as_view(), name='vt'),
-    url(r'^automat', Automat.as_view(template_name='automat.html'),name='automat'),
+    url(r'^automat/', Automat.as_view(template_name='automat.html'),name='automat'),
     url(r'^get_results', Results.as_view(), name='get_results') 
 ]
