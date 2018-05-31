@@ -137,13 +137,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_URL = 'login'
-LOGOUT_REDIRECT_URL = '/'
+#LOGOUT_REDIRECT_URL = '/'
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='294340476870-og20t8lh8kdm3ieamja9396pfi48jl4p.apps.googleusercontent.com'  #Paste CLient Key
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '1krAwICjaf_RG9YF856n31JO' #Paste Secret Key
 #SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '466903835294-9vblqhpd7csgohgiu3t8qnelaab3s8l7.apps.googleusercontent.com'
 #SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'vahSiCmm5otWfocTUnn2IWOn'
 
-
+SESSION_COOKIE_SECURE = False
 
 
